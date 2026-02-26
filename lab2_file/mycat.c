@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <stdio.h>	  
 #include <errno.h>	  
+#include "myinclude.h"
 
 #define LEN 1024  //olvasási puffer hossz
 
@@ -55,8 +56,7 @@ int main (int argc, char * argv[])
         for (i=1; i<argc; i++) { /* amíg van még paraméter */
             /* nyitás csak olvasásra */
             if ( ( fd = open (argv[i], O_RDONLY )) < 0) { 
-                fprintf (stderr,"nem lehet megnyitni a %s állományt\n",argv[i]);
-                exit(EXIT_FAILURE);
+                syserr("open"); //makróval hiba kiírás és kilépés
             }
             /* másolás */
             while ( (n = read (fd, buff, LEN))>0 ) {
