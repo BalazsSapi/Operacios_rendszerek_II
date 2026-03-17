@@ -3,15 +3,22 @@
  */
 
 #include "myinclude.h"
+#define NCHAR 100000
 
 // n darab c karaktert ír a name nevű fájlba
 int makefile(char *name, char c, int n) {
     int fd;
     // TODO: nyissuk meg írásra, új fájl, csonkolással
+    fd = open(name,O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if(fd==-1){
+        syserr("File hiba.");
+    }
 
     // TODO: for ciklus n-szer, minden ciklus egyszer
     // kiírja a c karaktert a fájlba
-
+    for(int i =0; i < n; i++){
+        if(write(fd,&c,1)!=1){ syserr("hiba az irasban!");};
+    }
     // fájl zárás
     close(fd);
     return 0;
@@ -27,25 +34,28 @@ int main(int argc, char *argv[]) {
     }
     if (pid1 == 0) {
         // TODO: első fiú kódja
-        ...
-
-            exit(EXIT_SUCCESS);  // a fiú itt mindenképp kilép, így
+        printf("Fiu 1\n");
+        makefile("a.txt", 'a', NCHAR);
+        exit(EXIT_SUCCESS);  // a fiú itt mindenképp kilép, így
                                  // nem futhat rá a következő kódokra
+    }else{
+        if((pid2 = fork()) < 0) {
+        syserr("f2");
     }
+    if(pid2==0){
+        printf("fiu 2\n");
 
-    // TODO: második fi
-    // második fiú indítása
-    ...
+        makefile("b.txt", 'b', NCHAR);
+        exit(EXIT_SUCCESS);
+    }
+    else{
+        printf("apa\n");
+        //apa megvarja mindke3t fiat
 
-        // TODO: második fiú kódja
-        ...
-
-    // TODO: apa kódja, itt ír a fájlba
-        ...
-
-    // apa megvárja mindkét fiát
-    wait(&status1);
-    wait(&status2);
-
-    exit(EXIT_SUCCESS);
+        makefile("c.txt", 'c', NCHAR);
+        wait(&status1);
+        wait(&status2);
+     
+    }
+}
 }
