@@ -19,25 +19,9 @@ int main(int argc, char *argv[]) {
     }
     if (pid1 == 0) {
         // TODO: első fiú kódja
-        printf("B folyamat\n");
-        while(access("ki.txt", F_OK ) == -1){
-            usleep(200000);
-        }
-        int fd;
-        if((fd=open("ki.txt", O_RDONLY))==-1) syserr("open");
-        int n = read(fd, buff, strlen(buff));
-        write(STDOUT_FILENO,buff, n);
-
-        close(fd);
-        exit(EXIT_SUCCESS);  
-    }else{
-        if((pid2 = fork()) < 0) {
-            syserr("f2");
-        }
-    if(pid2==0){
         printf("C folyamat\n");
         strcat(buff," C");
-        
+
         if ((pid3 = fork()) < 0) {
             syserr("f3");
         }
@@ -50,14 +34,36 @@ int main(int argc, char *argv[]) {
             close(fd);
             exit(EXIT_SUCCESS); 
         }
-        wait(&status3);
+        else{
+            wait(&status3);
+            exit(EXIT_SUCCESS); 
+        }
+    }else{
+        if((pid2 = fork()) < 0) {
+            syserr("f2");
+        }
+    if(pid2==0){
+        printf("B folyamat\n");
+        while (access("ki.txt", F_OK) == -1)
+        {
+            usleep(300000); // 300 ms
+        }
+        usleep(200000); // 200 ms
+        int fd, n;
+        if((fd = open("ki.txt", O_RDONLY))==-1) {syserr("open");}
+        char buff2[BUFSIZ]={0};
+        while((n=read(fd, buff2, BUFSIZ))>0){
+            write(STDOUT_FILENO, buff2, n);
+        }
+        if(close(fd)==-1) {syserr("close");}
         exit(EXIT_SUCCESS);
     }
     else{
         printf("A folyamat\n");
         wait(&status1);
         wait(&status2);
-        wait(&status3);
+        printf("\n");
+        exit(EXIT_SUCCESS);
      
     }
 }
