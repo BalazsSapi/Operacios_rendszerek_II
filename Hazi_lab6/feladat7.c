@@ -1,5 +1,5 @@
-#include "../myinclude.h"
-#include "../parancssor.h"
+#include "myinclude.h"
+#include "parancssor.h"
 
 int main (int argc, char * argv[])
 {
