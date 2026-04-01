@@ -1,7 +1,7 @@
 set prompt \033[31mgdb$ \033[0m
 
 # kövesse csak az apa folyamatot
-# set follow-fork-mode parent
+set follow-fork-mode parent
 
 # kövesse csak a fiú folyamatot
 # set follow-fork-mode child

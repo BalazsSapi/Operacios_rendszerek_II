@@ -52,17 +52,19 @@ int main() {
            */
         int n;
         char b[MAX];  // puffer
-        if ((n = read(pfd[0], b, MAX)) < 0) {
-            syserr("read");
+        while ((n = read(pfd[0], b, MAX)) > 0) {
+            if (write(STDOUT_FILENO, b, n) == -1) { /* kiírja a képernyőre */
+                syserr("write");
+            }
         }
 
-        printf("az apa kiolvasta amit fiú folyamat írt: %s\n", b);
 
         if (close(pfd[0])) {
             syserr("close2");
         }
 
         wait(NULL); /* fiúra vár */
+        printf("\n");
         exit(EXIT_SUCCESS);
     }
 }
