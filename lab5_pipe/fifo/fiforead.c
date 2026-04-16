@@ -15,6 +15,9 @@
 #define N 4096
 
 int main(int argc, char* argv[]) {
+
+    setbuf(stdout, NULL);
+
     if (argc < 2) {
         printf("hiányzó fifo név\n");
         exit(1);
@@ -35,6 +38,7 @@ int main(int argc, char* argv[]) {
     if ((fd = open(argv[1], O_RDONLY)) < 0) {
         syserr("open");
     }
+    printf("OK\n");
 
     char buff[N];
     ssize_t n;

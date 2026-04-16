@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         fclose(in);
 
         // a cső lezárása fontos!
-        close(pfd[1]);
+        fclose(pipeIn);
         // megvárja, hogy fia is befejezze
         int status;
         if (wait(&status) < 0)
@@ -74,23 +74,22 @@ int main(int argc, char *argv[]) {
         close(pfd[1]);  // ez a folyamat olvasni fog, az írható véget lezárja
 
         // hozzárendelem a pipe olvasható véget az stdin-hez
-        /*if (dup2(pfd[0], STDIN_FILENO) < 0) {
+        if (dup2(pfd[0], STDIN_FILENO) < 0) {
             syserr("dup2");
-        }*/
+        }
         FILE *pipeOut = fdopen(pfd[0], "r");
         double num;
         while (fscanf(pipeOut, "%lf", &num) == 1) {
             printf("%lf\n", num);
         }
-        //close(pfd[0]); /* többet nincs rá szükség */
+        close(pfd[0]); /* többet nincs rá szükség */
 
         // elindítom a sort programot, ez a standard bemenetről olvassa
         // a szövegét
-        //execlp("sort", "sort", "-n", (char *)NULL);
+        execlp("sort", "sort", "-n", (char *)NULL);
 
         /* ide már nem érhetek el */
         /* a sort ki fog lépni, ha lezárjuk a pipe másik végét */
-        //syserr("execlp");
-        exit(EXIT_SUCCESS);
+        syserr("execlp");
     }
 }

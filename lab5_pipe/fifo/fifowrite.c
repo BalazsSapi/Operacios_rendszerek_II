@@ -16,6 +16,9 @@
 #define N 4096
 
 int main(int argc, char **argv) {
+
+    setbuf(stdout, NULL);
+
     if (argc != 2) {
         printf("Használat: %s fifo_név\n", argv[0]);
         exit(EXIT_FAILURE);
@@ -34,6 +37,7 @@ int main(int argc, char **argv) {
     if ((fd = open(argv[1], O_WRONLY)) < 0) {
         syserr("open");
     }
+    printf("OK\n");
 
     // az stdin-t másolja  a fifo-ba
     char buff[N];

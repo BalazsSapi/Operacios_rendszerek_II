@@ -7,7 +7,7 @@
  *    gcc -Wall pipe.c -o pipe
  */
 
-#define MAX 512 /* puffer hossza az olvasáshoz */
+#define MAX 1 /* puffer hossza az olvasáshoz */
 
 int main() {
     /* a pipe függvény hozza létre a csővezeték azonosítóit
@@ -29,7 +29,7 @@ int main() {
             syserr("close");
         }
 
-        char a[] = "Helló!";  // ezt a kis sztringet írjuk át a csövön
+        char a[] = "Helló!Hooooooooooooooooooooooooooooooooooooooooszuuuuuuuuu";  // ezt a kis sztringet írjuk át a csövön
         /* átírja a sztringet, megy a \0 is */
         if (write(pfd[1], a, strlen(a) + 1) < 0) {
             syserr("write");
