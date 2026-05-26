@@ -11,15 +11,15 @@
 
 #define  ARRAY   3     // a float tomb hossza  
 
-#define MS 20          //idozites varakozashoz, 20 ms 
+// #define MS 20          //idozites varakozashoz, 20 ms 
 // #define MS 100          //idozites varakozashoz 
-// #define MS 0          //idozites varakozashoz 
+#define MS 0          //idozites varakozashoz 
 
 //szimbolikus nevek a szemaforoknak
 enum { mutex, empty, full }; // 0., 1., 2. szemafor indexek
 
 //valtozok az osztott memoria kezelesehez
-static int semid, shmid;  //szemafor, osztott mmeoria id
+static int semid, shmid;  //szemafor, osztott memoria id
 static char * mem;       //szegmens kezdo cime
 
 static int * wr, *rd;    //iro es olvaso index
@@ -48,32 +48,37 @@ void termelo ( int sor, char * fname )
     int count = 0;
     while  (1)
     {
-        //TODO: kivenni a break-et !!!
-
-        break;
-
         //TODO: olvas egy szamot a fajlbol, ha fajl vege, a szam=NAN
-        
-        //TODO: termelo muvelet meghivasa !!! 3 szemaforon 
+        if(fscanf(fp, "%f", &szam) == EOF)
+            szam = nanf("");
+
+        //TODO: termelo muvelet meghivasa !!! 3 szemaforon
+        semop(semid, termel, 3);
 
         //kritikus szakasz
 
         //TODO: beirja  a szamot  a tombbe az iro index helyre 
+        arr[*wr] = szam;
 
         //TODO: tovabbviszi az indexet, ha eleri a veget (ez ARRAY), akkor nullazza
+        *wr = (*wr + 1) % ARRAY;
 
         //TODO: alszik MS*1000 mikroszekundumot
+        usleep(MS*1000);
 
         //TODO: jelez muvelet
+        semop(semid, &jelez, 1);
 
+        if (isnan(szam))
+            break;
         count++;
-        if ( isnan(szam) ) break;
     }
     printf (ANSI_COLOR_GREEN "a %d. termelő pid=%d termelő kilép, %d számot írt\n" ANSI_COLOR_RESET, sor, getpid(), count);
 
     //TODO: zarja  a fajlt es lecsatolja a memoriat
     fclose(fp);
-    if(shmdt((void*)mem)<0) syserr("mem");
+    if(shmdt((void*)mem)<0)
+        syserr("mem");
 }
 
 //a fogyaszto fiuk feladata
@@ -93,27 +98,32 @@ void fogyaszto (int sor )
     int count = 0; //hany szamot olvas
     while  (1)
     {
-        //TODO: kivenni a break-et !!!
-        break;
-        
         //TODO: fogyaszto muvelet meghivasa ! 3 szemaforon 
+        semop(semid, fogyaszt, 3);
 
         //kritikus szakasz
 
         //TODO: kiolvassa a szamot, kiirja  a terminalra
+        szam = arr[*rd];
+        printf("%f\n", szam);
 
         //TODO: tovabbviszi az olvaso indexet, ha eleri a veget, akkor nullazza 
+        *rd = (*rd + 1) % ARRAY;
 
         //TODO: alszik MS*1000 mikroszekundumot
+        usleep(MS*1000);
 
         //TODO: jelez muvelet
+        semop(semid, &jelez, 1);
 
+        if (isnan(szam))
+            break;
         count++;
-        if ( isnan(szam) ) break;
     }
    printf ( ANSI_COLOR_YELLOW "a %d. fogyasztó, pid=%d kilép, %d számot olvasott\n" ANSI_COLOR_RESET, sor, getpid(), count);
 
    //TODO: lecsatolja a memoriat
+   shmdt((void *)mem);
 }
 
 int main( int argc, char ** argv )

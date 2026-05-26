@@ -47,19 +47,19 @@ int main( int argc, char * argv[])
     
     while(1){
 
-    //TODO:
-    // 1. down művelet
-    semop(semid, &iro_down, 1);   //s0 down
-    // 2. 1 sor olvasása stdin->mem, max 1024 byte!
-    if((n = read(STDIN_FILENO, mem, 1024)) < 0)
-        syserr("read");
+        //TODO:
+        // 1. down művelet
+        semop(semid, &iro_down, 1);   //s0 down
+        // 2. 1 sor olvasása stdin->mem, max 1024 byte!
+        if((n = read(STDIN_FILENO, mem, 1024)) < 0)
+            syserr("read");
 
-    mem[n] = '\0';  //string lezárása
-    // 3. up művelet
-    semop(semid, &iro_up, 1);     //s1 up
-    //ha  a sor "exit" akkor break
-    if(strcmp(mem, "exit\n") == 0 || n == 0)
-        break;
+        mem[n] = '\0';  //string lezárása
+        // 3. up művelet
+        semop(semid, &iro_up, 1);     //s1 up
+        //ha  a sor "exit" akkor break
+        if(strcmp(mem, "exit\n") == 0 || n == 0)
+            break;
     }
     //osztott memória lecsatolás
     if(shmdt((void *)mem) == -1)
